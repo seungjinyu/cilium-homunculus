@@ -32,8 +32,7 @@ func attachCgroup(spec *ebpf.Collection, name, cgroupRoot, pinPath string) error
 			return fmt.Errorf("unpinning defunct link %s: %w", pin, err)
 		}
 
-		log.Printf("Unpinned defunct link %s for program %s", pin, name)
-
+		log.Printf("Unpinned defunct link %s for program %s", pin, name)\
 	}
 	return nil
 
