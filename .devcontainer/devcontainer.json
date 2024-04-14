@@ -1,35 +1,56 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/go
+// // For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// // README at: https://github.com/devcontainers/templates/tree/main/src/go
+// {
+// 	"name": "ebpf-golang-devcontainer",
+// 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+// 	"build": {
+// 		"dockerfile": "Dockerfile"
+// 	},
+// 	"features": {
+// 		"ghcr.io/devcontainers/features/go:1": {},
+// 		"ghcr.io/guiyomh/features/golangci-lint:0": {},
+// 		"ghcr.io/guiyomh/features/goreleaser:0": {},
+// 		"ghcr.io/guiyomh/features/gotestsum:0": {},
+// 		"ghcr.io/guiyomh/features/pact-go:0": {},
+// 		"ghcr.io/azutake/devcontainer-features/go-packages-install:0": {},
+// 		"ghcr.io/marcozac/devcontainer-features/gofumpt:1": {}
+// 	},
+// 	"runArgs": ["--privileged"],
+// 	"privileged": true,
+
+// 	// Features to add to the dev container. More info: https://containers.dev/features.
+// 	// "features": {},
+
+// 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+// 	// "forwardPorts": [],
+
+// 	// Use 'postCreateCommand' to run commands after the container is created.
+// 	// "postCreateCommand": "go version",
+
+// 	// Configure tool-specific properties.
+// 	// "customizations": {},
+
+// 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+// 	// "remoteUser": "root"
+// }
+
 {
-	"name": "ebpf-golang-devcontainer",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
+	"name": "Cilium",
+	"image": "quay.io/cilium/cilium-builder:874230be6e22cf9ff9c4515097b5aee80b76ee8d@sha256:940c75b1a94de9d5f529ef40fcea3f71fef592f8744984eae93862852f4870d9",
+	// "workspaceFolder": "/go/src/github.com/cilium/cilium",
+	"workspaceFolder": "/workspaces",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/go/src/github.com/cilium/cilium,type=bind",
 	"features": {
-		"ghcr.io/devcontainers/features/go:1": {},
-		"ghcr.io/guiyomh/features/golangci-lint:0": {},
-		"ghcr.io/guiyomh/features/goreleaser:0": {},
-		"ghcr.io/guiyomh/features/gotestsum:0": {},
-		"ghcr.io/guiyomh/features/pact-go:0": {},
-		"ghcr.io/azutake/devcontainer-features/go-packages-install:0": {},
-		"ghcr.io/marcozac/devcontainer-features/gofumpt:1": {}
+	  "ghcr.io/devcontainers/features/docker-in-docker": {}
 	},
-	"runArgs": ["--privileged"],
-	"privileged": true,
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "go version",
-
-	// Configure tool-specific properties.
-	// "customizations": {},
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
-}
+	"mounts": [
+	  // To enable kernel modules for devcontainer
+	  "source=/lib/modules,target=/lib/modules,type=bind,readonly",
+	  "source=/usr/lib/modules,target=/usr/lib/modules,type=bind,readonly"
+	],
+	"runArgs": [
+	  "--sysctl", "net.ipv6.conf.all.disable_ipv6=0"
+	],
+	"postCreateCommand": "git config --global --add safe.directory /go/src/github.com/cilium/cilium"
+  }
+  
