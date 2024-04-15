@@ -5,6 +5,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"time"
 
@@ -18,8 +19,12 @@ const mapKey uint32 = 0
 
 func main() {
 
+	appType := flag.String("app", "kprobe", "a string to define what app to compile ")
+
+	flag.Parse()
+
 	// Name of the kernel function to trace.
-	fn := "sys_getpid"
+	fn := "do_unlinkat"
 
 	// Allow the current process to lock memory for eBPF resources.
 	if err := rlimit.RemoveMemlock(); err != nil {
@@ -38,6 +43,7 @@ func main() {
 	// will increment the execution counter by 1. The read loop below polls this
 	// map value once per second.
 	kp, err := link.Kprobe(fn, objs.KprobeExecve, nil)
+
 	if err != nil {
 		log.Fatalf("opening kprobe: %s", err)
 	}
@@ -50,11 +56,36 @@ func main() {
 
 	log.Println("Waiting for events..")
 
-	for range ticker.C {
-		var value uint64
-		if err := objs.KprobeMap.Lookup(mapKey, &value); err != nil {
-			log.Fatalf("reading map: %v", err)
+	if *appType == "kprobe" {
+
+		for range ticker.C {
+			var value uint64
+			if err := objs.KprobeMap.Lookup(mapKey, &value); err != nil {
+				log.Fatalf("reading map: %v", err)
+			}
+			log.Printf("%s called %d times\n", fn, value)
 		}
-		log.Printf("%s called %d times\n", fn, value)
+	} else if *appType == "kprobe_percpu" {
+		for range ticker.C {
+			var all_cpu_value []uint64
+			if err := objs.KprobeMap.Lookup(mapKey, &all_cpu_value); err != nil {
+				log.Fatalf("reading map: %v", err)
+			}
+			for cpuid, cpuvalue := range all_cpu_value {
+				log.Printf("%s called %d times on CPU%v\n", fn, cpuvalue, cpuid)
+			}
+			log.Printf("\n")
+		}
+	} else if *appType == "kprobe_perf_event" {
+		for range ticker.C {
+			var all_cpu_value []uint64
+			if err := objs.KprobeMap.Lookup(mapKey, &all_cpu_value); err != nil {
+				log.Fatalf("reading map: %v", err)
+			}
+			for cpuid, cpuvalue := range all_cpu_value {
+				log.Printf("%s called %d times on CPU%v\n", fn, cpuvalue, cpuid)
+			}
+			log.Printf("\n")
+		}
 	}
 }
