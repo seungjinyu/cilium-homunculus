@@ -11,7 +11,7 @@ struct bpf_map_def SEC("maps") kprobe_map = {
 	.max_entries = 1,
 };
 
-SEC("kprobe/do_unlinkat")
+// SEC("kprobe/do_unlinkat")
 int kprobe_execve() {
 	u32 key     = 0;
 	u64 initval = 1, *valp;
