@@ -1,3 +1,5 @@
 go-ebpf-test
 bpf_bpfeb.o
 bpf_bpfel.o
+kprobe.o
+kprobe.ll

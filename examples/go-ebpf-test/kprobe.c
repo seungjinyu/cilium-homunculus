@@ -2,8 +2,8 @@
 // go:build ignore 
 // go build 시 ignore 을 해주지 않는 경우 go build 에서 에러를 출력해준다. 
 #include "common.h"
-#include "<bpf/bpf_helpers.h>"
-#include "<bpf/bpf_helpers_defs.h>"
+// #include "<bpf/bpf_helpers.h>"
+// #include "<bpf/bpf_helpers_defs.h>"
 
 
 char __license[] SEC("license") = "Dual MIT/GPL";
